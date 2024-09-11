@@ -9,11 +9,11 @@ num_proc_load_dataset = num_proc
 enc = tiktoken.get_encoding("gpt2")
 
 if __name__ == '__main__':
-    # Load only 2% of the dataset
-    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:2%]", num_proc=num_proc_load_dataset)
+    # Load only 0.05% of the dataset
+    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:0.05%]", num_proc=num_proc_load_dataset)
     
     # Create a smaller validation split
-    split_dataset = dataset.train_test_split(test_size=0.0005, seed=2357, shuffle=True)
+    split_dataset = dataset.train_test_split(test_size=0.1, seed=2357, shuffle=True)
     split_dataset['val'] = split_dataset.pop('test')  # rename the test split to val
 
     def process(example):
@@ -45,3 +45,7 @@ if __name__ == '__main__':
 
     print(f"Train set size: {len(tokenized['train'])} samples")
     print(f"Validation set size: {len(tokenized['val'])} samples")
+    
+    # Print total tokens in each set
+    print(f"Total tokens in train set: {sum(tokenized['train']['len'])}")
+    print(f"Total tokens in validation set: {sum(tokenized['val']['len'])}")
