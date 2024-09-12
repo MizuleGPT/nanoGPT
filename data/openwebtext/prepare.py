@@ -9,25 +9,9 @@ num_proc_load_dataset = num_proc
 enc = tiktoken.get_encoding("gpt2")
 
 if __name__ == '__main__':
-    # Use streaming to load only a small portion of the dataset
-    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train", streaming=True)
+    # Load only the first 32,000 rows of the dataset
+    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:32000]", num_proc=num_proc_load_dataset)
     
-    # Take only a small fraction of the streamed dataset
-    fraction = 0.0001
-    
-    # Handle case where dataset info might not be available
-    try:
-        sample_size = int(dataset.info.splits['train'].num_examples * fraction)
-    except AttributeError:
-        print("Dataset info not available. Using an arbitrary sample size.")
-        sample_size = 1000  # You can adjust this number as needed
-    
-    dataset = dataset.take(sample_size)
-    
-    # Convert the iterable dataset to a regular dataset
-    dataset = list(dataset)  # Convert to list first
-    dataset = load_dataset('dict', data={'train': dataset})['train']
-
     # Create a smaller validation split
     split_dataset = dataset.train_test_split(test_size=0.1, seed=2357, shuffle=True)
     split_dataset['val'] = split_dataset.pop('test')  # rename the test split to val
@@ -65,4 +49,3 @@ if __name__ == '__main__':
     # Print total tokens in each set
     print(f"Total tokens in train set: {sum(tokenized['train']['len'])}")
     print(f"Total tokens in validation set: {sum(tokenized['val']['len'])}")
-    
