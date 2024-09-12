@@ -3,15 +3,32 @@ from tqdm import tqdm
 import numpy as np
 import tiktoken
 from datasets import load_dataset
+import sys
 
 num_proc = 8
 num_proc_load_dataset = num_proc
 enc = tiktoken.get_encoding("gpt2")
 
+MAX_SIZE_BYTES = 500 * 1024 * 1024  # 500 MB in bytes
+
+def get_size(obj):
+    return sys.getsizeof(obj)
+
 if __name__ == '__main__':
-    # Load only the first 32,000 rows of the dataset
-    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:32000]", num_proc=num_proc_load_dataset)
-    
+    # Start with a small percentage and incrementally increase if needed
+    percentage = 0.0001
+    dataset = None
+    total_size = 0
+
+    while total_size < MAX_SIZE_BYTES:
+        dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split=f"train[:{percentage}%]", num_proc=num_proc_load_dataset)
+        total_size = sum(get_size(example['text']) for example in dataset)
+        if total_size >= MAX_SIZE_BYTES:
+            break
+        percentage *= 2  # Double the percentage for the next iteration
+
+    print(f"Loaded approximately {total_size / (1024 * 1024):.2f} MB of data")
+
     # Create a smaller validation split
     split_dataset = dataset.train_test_split(test_size=0.1, seed=2357, shuffle=True)
     split_dataset['val'] = split_dataset.pop('test')  # rename the test split to val
