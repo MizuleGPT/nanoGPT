@@ -9,8 +9,8 @@ num_proc_load_dataset = num_proc
 enc = tiktoken.get_encoding("gpt2")
 
 if __name__ == '__main__':
-    # Load only 0.05% of the dataset
-    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:0.05%]", num_proc=num_proc_load_dataset)
+    # Load only 0.0001% of the dataset
+    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:0.0001%]", num_proc=num_proc_load_dataset)
     
     # Create a smaller validation split
     split_dataset = dataset.train_test_split(test_size=0.1, seed=2357, shuffle=True)
