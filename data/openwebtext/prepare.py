@@ -10,7 +10,9 @@ enc = tiktoken.get_encoding("gpt2")
 
 if __name__ == '__main__':
     # Load only 0.0001% of the dataset
-    dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split="train[:0.0001%]", num_proc=num_proc_load_dataset)
+    total_examples = 10000000  # Replace with the actual number of examples in the dataset
+num_examples = int(total_examples * 0.0001)  # 0.0001% as a decimal is 0.000001
+dataset = load_dataset("dustinwloring1988/fineweb-edu-sample-10BT", split=f"train[:{num_examples}]", num_proc=num_proc_load_dataset)
     
     # Create a smaller validation split
     split_dataset = dataset.train_test_split(test_size=0.1, seed=2357, shuffle=True)
