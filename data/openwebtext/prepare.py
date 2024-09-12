@@ -14,11 +14,18 @@ if __name__ == '__main__':
     
     # Take only a small fraction of the streamed dataset
     fraction = 0.0001
-    sample_size = int(dataset.info.splits['train'].num_examples * fraction)
+    
+    # Handle case where dataset info might not be available
+    try:
+        sample_size = int(dataset.info.splits['train'].num_examples * fraction)
+    except AttributeError:
+        print("Dataset info not available. Using an arbitrary sample size.")
+        sample_size = 1000  # You can adjust this number as needed
+    
     dataset = dataset.take(sample_size)
     
     # Convert the iterable dataset to a regular dataset
-    dataset = dataset.to_pandas().to_dict('records')
+    dataset = list(dataset)  # Convert to list first
     dataset = load_dataset('dict', data={'train': dataset})['train']
 
     # Create a smaller validation split
