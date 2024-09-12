@@ -58,3 +58,4 @@ if __name__ == '__main__':
     # Print total tokens in each set
     print(f"Total tokens in train set: {sum(tokenized['train']['len'])}")
     print(f"Total tokens in validation set: {sum(tokenized['val']['len'])}")
+    
